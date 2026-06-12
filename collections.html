@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collections - DevAPI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+
+        <a class="navbar-brand" href="dashboard.html">DevAPI</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrivate">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarPrivate">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="collections.html">Collections</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="history.html">History</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="team.html">Team</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html">Profile</a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<div class="main-content">
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Collections</h2>
+        <a href="create-collection.html" class="btn btn-primary">+ New Collection</a>
+    </div>
+
+    <div id="collectionsContainer" class="row g-4"></div>
+
+</div>
+</div>
+
+<footer class="bg-dark text-white text-center p-3 mt-5">
+    <p>© 2026 DevAPI Platform | All Rights Reserved</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+    window.location.href = "login.html";
+}
+
+async function loadCollections() {
+
+    const res = await fetch("http://localhost:3000/api/collections/" + userId);
+    const data = await res.json();
+
+    const container = document.getElementById("collectionsContainer");
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+        container.innerHTML = `
+            <div class="text-center mt-5">
+                <p>No collections yet</p>
+                <a href="create-collection.html" class="btn btn-primary">Create First Collection</a>
+            </div>
+        `;
+        return;
+    }
+
+    data.forEach(col => {
+        container.innerHTML += `
+            <div class="col-md-4">
+                <div class="card p-3 position-relative">
+
+                    <div class="dropdown position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-sm btn-light"
+                            data-bs-toggle="dropdown">
+                            ⋮
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button class="dropdown-item text-danger"
+                                    onclick="deleteCollection('${col.name}')">
+                                    Delete
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h5>${col.name}</h5>
+                    <p>${col.requests.length} requests</p>
+
+                    <button class="btn btn-outline-primary"
+                        onclick="openCollection('${col.name}')">
+                        Open
+                    </button>
+
+                </div>
+            </div>
+        `;
+    });
+}
+
+function openCollection(name) {
+    window.location.href = "collection-details.html?name=" + name;
+}
+
+async function deleteCollection(name) {
+
+    if (!confirm("Delete this collection?")) return;
+
+    await fetch("http://localhost:3000/api/collections/delete-collection", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            name,
+            userId   // 🔥 IMPORTANT
+        })
+    });
+
+    loadCollections();
+}
+
+loadCollections();
+</script>
+
+</body>
+</html>

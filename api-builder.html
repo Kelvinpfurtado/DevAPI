@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Builder - DevAPI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="dashboard.html">DevAPI</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrivate">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarPrivate">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="dashboard.html">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="collections.html">Collections</a></li>
+                <li class="nav-item"><a class="nav-link" href="history.html">History</a></li>
+                <li class="nav-item"><a class="nav-link" href="team.html">Team</a></li>
+                <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="main-content">
+<div class="container mt-5">
+
+    <h2 class="mb-4">API Request Builder</h2>
+
+    <div class="card p-4 mb-4">
+
+        <div class="row g-3">
+            <div class="col-md-2">
+                <select id="methodSelect" class="form-select">
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>DELETE</option>
+                </select>
+            </div>
+
+            <div class="col-md-8">
+                <input id="urlInput" type="text" class="form-control" placeholder="Enter API URL">
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" onclick="sendRequest()">Send</button>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5>Headers</h5>
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <input id="headerKey" class="form-control" placeholder="Key">
+                </div>
+                <div class="col-md-5">
+                    <input id="headerValue" class="form-control" placeholder="Value">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5>Body (JSON)</h5>
+            <textarea id="bodyInput" class="form-control" rows="5"></textarea>
+        </div>
+
+    </div>
+
+    <div class="card p-4">
+        <h5>Response</h5>
+
+        <p>Status: <strong id="statusText">---</strong></p>
+
+        <textarea id="responseBox" class="form-control" rows="8"></textarea>
+
+        <!-- ADD TO COLLECTION BUTTON -->
+        <div class="mt-3">
+<button class="btn btn-primary"
+    onclick="prepareRequest(); loadCollections()"
+    data-bs-toggle="modal"
+    data-bs-target="#collectionModal">
+    Add to Collection
+</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="collectionModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Select Collection</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="list-group">
+                    <!-- dynamic -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</div>
+
+<footer class="bg-dark text-white text-center p-3 mt-5">
+    <p>© 2026 DevAPI Platform | All Rights Reserved</p>
+</footer>
+
+<script>
+if (!localStorage.getItem("userId")) {
+    window.location.href = "login.html";
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+let editMode = false;
+let editIndex = null;
+let editCollection = null;
+let currentRequest = null;
+
+// SEND REQUEST
+
+async function sendRequest() {
+
+    const url = document.getElementById("urlInput").value;
+    const method = document.getElementById("methodSelect").value;
+    const bodyText = document.getElementById("bodyInput").value;
+
+    const headerKey = document.getElementById("headerKey").value;
+    const headerValue = document.getElementById("headerValue").value;
+
+    let body = null;
+
+    // BODY
+    if (bodyText.trim()) {
+        try {
+            body = JSON.parse(bodyText);
+        } catch {
+            alert("Invalid JSON");
+            return;
+        }
+    }
+
+    // HEADERS
+    let headers = {};
+
+    if (headerKey && headerValue) {
+        headers[headerKey] = headerValue;
+    }
+
+    try {
+
+        const res = await fetch("http://localhost:3000/api/request", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                url,
+                method,
+                body,
+                headers,
+                userId: localStorage.getItem("userId")
+            })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("responseBox").value =
+            JSON.stringify(data.data, null, 2);
+
+        document.getElementById("statusText").innerText =
+            data.status || "Error";
+
+    } catch (err) {
+
+        console.log(err);
+        alert("Request failed");
+    }
+}
+
+
+// PREPARE REQUEST
+function prepareRequest() {
+    const url = document.getElementById("urlInput").value;
+    const method = document.getElementById("methodSelect").value;
+    const bodyText = document.getElementById("bodyInput").value;
+
+    let body = null;
+
+    if (bodyText.trim()) {
+        try { body = JSON.parse(bodyText); }
+        catch { alert("Invalid JSON"); return; }
+    }
+
+    currentRequest = { url, method, body };
+}
+
+// LOAD COLLECTIONS
+async function loadCollections() {
+
+    const userId = localStorage.getItem("userId");
+
+    const res = await fetch("http://localhost:3000/api/collections/" + userId);
+    const data = await res.json();
+
+    const container = document.querySelector(".list-group");
+    container.innerHTML = "";
+
+    data.forEach(col => {
+        container.innerHTML += `
+            <button class="list-group-item list-group-item-action"
+                onclick="addToCollection('${col.name}')">
+                ${col.name}
+            </button>
+        `;
+    });
+}
+
+// ADD TO COLLECTION
+async function addToCollection(name) {
+
+    const userId = localStorage.getItem("userId");
+
+    await fetch("http://localhost:3000/api/collections/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            collectionName: name,
+            request: currentRequest,
+            userId   // 🔥 THIS FIXES EVERYTHING
+        })
+    });
+
+    alert("Added to collection");
+
+    // close modal
+    const modalEl = document.getElementById('collectionModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+}
+window.onload = () => {
+    const data = localStorage.getItem("selectedRequest");
+
+    if (data) {
+        const req = JSON.parse(data);
+
+        document.getElementById("urlInput").value = req.url;
+        document.getElementById("methodSelect").value = req.method;
+        document.getElementById("bodyInput").value =
+            req.body ? JSON.stringify(req.body, null, 2) : "";
+
+        localStorage.removeItem("selectedRequest");
+    }
+
+    // EDIT MODE
+    if (localStorage.getItem("editMode")) {
+        editMode = true;
+        editIndex = localStorage.getItem("editIndex");
+        editCollection = localStorage.getItem("editCollection");
+
+        localStorage.removeItem("editMode");
+        localStorage.removeItem("editIndex");
+        localStorage.removeItem("editCollection");
+    }
+};
+
+async function handleAddToCollection() {
+    prepareRequest();
+
+    if (editMode) {
+        // DIRECT UPDATE (no modal)
+        await fetch("http://localhost:3000/api/collections/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                collectionName: editCollection,
+                index: editIndex,
+                request: currentRequest
+            })
+        });
+
+        alert("Request updated");
+        editMode = false;
+
+    } else {
+        // NORMAL FLOW → OPEN MODAL
+        const modal = new bootstrap.Modal(document.getElementById('collectionModal'));
+        loadCollections();
+        modal.show();
+    }
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DevAPI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR (Logged In) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+
+        <a class="navbar-brand" href="dashboard.html">DevAPI</a>
+
+        <!-- TOGGLER -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrivate">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- MENU -->
+        <div class="collapse navbar-collapse" id="navbarPrivate">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="dashboard.html">Dashboard</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="collections.html">Collections</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="history.html">History</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="team.html">Team</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html">Profile</a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+<div class="main-content">
+<!-- DASHBOARD CONTENT -->
+<div class="container mt-5">
+
+    <h2 class="mb-4">Welcome, Kelvin 👋</h2>
+
+    <!-- QUICK ACTIONS -->
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h5>New API Request</h5>
+                <p>Create and test a new API request.</p>
+                <a href="api-builder.html" class="btn btn-primary">Start</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h5>View Collections</h5>
+                <p>Manage your saved API requests.</p>
+                <a href="collections.html" class="btn btn-success">Open</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h5>Request History</h5>
+                <p>Check your previous API calls.</p>
+                <a href="history.html" class="btn btn-warning">View</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="row mt-5 g-4">
+
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h3 id="requestsCount">0</h3>
+                <p>Requests Made</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h3 id="collectionsCount">0</h3>
+                <p>Collections</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h3 id="teamsCount">0</h3>
+                <p>Teams Joined</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+if (!localStorage.getItem("userId")) {
+    window.location.href = "login.html";
+}
+</script>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+async function loadDashboard() {
+
+    const res = await fetch("http://localhost:3000/api/dashboard/" + userId);
+    const data = await res.json();
+
+    document.getElementById("collectionsCount").innerText = data.collections;
+    document.getElementById("requestsCount").innerText = data.requests;
+    document.getElementById("teamsCount").innerText = data.teams;
+}
+
+loadDashboard();
+</script>
+
+<footer class="bg-dark text-white text-center p-3 mt-5">
+    <p>© 2026 DevAPI Platform | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

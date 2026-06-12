@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Request</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+
+        <a class="navbar-brand" href="dashboard.html">DevAPI</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrivate">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarPrivate">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="collections.html">Collections</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="history.html">History</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="team.html">Team</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html">Profile</a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<div class="main-content">
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+
+    <div class="card p-4" style="width: 500px;">
+
+        <h3>Edit Request</h3>
+
+        <form class="mt-3" onsubmit="event.preventDefault(); updateRequest();">
+
+            <div class="mb-3">
+                <label>Request Name</label>
+                <input id="nameInput" type="text" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Method</label>
+                <select id="methodSelect" class="form-select">
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>DELETE</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>API URL</label>
+                <input id="urlInput" type="text" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Headers</label>
+                <input id="headersInput" type="text" class="form-control" placeholder="key:value">
+            </div>
+
+            <div class="mb-3">
+                <label>Body</label>
+                <textarea id="bodyInput" class="form-control" rows="4"></textarea>
+            </div>
+
+            <button class="btn btn-warning">Update</button>
+            <a id="cancelBtn" href="#" class="btn btn-secondary">Cancel</a>
+
+        </form>
+
+    </div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<footer class="bg-dark text-white text-center p-3 mt-5">
+    <p>© 2026 DevAPI Platform | All Rights Reserved</p>
+</footer>
+
+<script>
+if (!localStorage.getItem("userId")) {
+    window.location.href = "login.html";
+}
+</script>
+
+<script>
+
+// LOAD DATA INTO FORM
+window.onload = () => {
+    const data = localStorage.getItem("editRequestData");
+
+    if (data) {
+        const req = JSON.parse(data);
+
+        document.getElementById("nameInput").value = req.name || "";
+        document.getElementById("urlInput").value = req.url;
+        document.getElementById("methodSelect").value = req.method;
+        document.getElementById("bodyInput").value =
+            req.body ? JSON.stringify(req.body, null, 2) : "";
+
+        if (req.headers) {
+            const key = Object.keys(req.headers)[0];
+            document.getElementById("headersInput").value =
+                key + ":" + req.headers[key];
+        }
+    }
+
+    // set cancel redirect
+    const collectionName = localStorage.getItem("editCollection");
+    document.getElementById("cancelBtn").href =
+        "collection-details.html?name=" + collectionName;
+};
+
+// UPDATE REQUEST
+async function updateRequest() {
+
+    const name = document.getElementById("nameInput").value;
+    const url = document.getElementById("urlInput").value;
+    const method = document.getElementById("methodSelect").value;
+    const bodyText = document.getElementById("bodyInput").value;
+    const headersText = document.getElementById("headersInput").value;
+
+    let body = null;
+    let headers = {};
+
+    // parse body
+    if (bodyText.trim()) {
+        try {
+            body = JSON.parse(bodyText);
+        } catch {
+            alert("Invalid JSON body");
+            return;
+        }
+    }
+
+    // parse headers
+    if (headersText.includes(":")) {
+        const [key, value] = headersText.split(":");
+        headers[key.trim()] = value.trim();
+    }
+
+    const index = localStorage.getItem("editIndex");
+    const collectionName = localStorage.getItem("editCollection");
+
+    await fetch("http://localhost:3000/api/collections/update", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            collectionName,
+            index,
+            request: { name, url, method, body, headers }
+        })
+    });
+
+    alert("Updated successfully");
+
+    window.location.href = "collection-details.html?name=" + collectionName;
+}
+
+</script>
+
+</body>
+</html>

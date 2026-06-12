@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DevAPI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+
+        <a class="navbar-brand" href="index.html">DevAPI</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                <li class="nav-item"><a class="nav-link active" href="login.html">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<!-- LOGIN FORM -->
+<div class="container d-flex justify-content-center align-items-center" style="height: 80vh;">
+
+    <div class="card p-4" style="width: 400px;">
+
+        <h3 class="text-center mb-4">Login</h3>
+
+        <form onsubmit="event.preventDefault(); loginUser();">
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input id="email" type="email" class="form-control" placeholder="Enter your email">
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input id="password" type="password" class="form-control" placeholder="Enter password">
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <a href="forgot-password.html" style="font-size: 14px;">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+
+        </form>
+
+        <p class="text-center mt-3">
+            Don't have an account?
+            <a href="register.html">Register</a>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+async function loginUser() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        showPopup("Please fill all fields", "danger");
+        return;
+    }
+
+    try {
+
+        const res = await fetch("http://localhost:3000/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+
+            showPopup(data.error, "danger");
+
+        } else {
+
+            localStorage.clear();
+
+            localStorage.setItem("userId", data.userId);
+            localStorage.setItem("userName", data.name);
+            localStorage.setItem("userEmail", data.email);
+
+            showPopup("Login successful", "success");
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 3000);
+        }
+
+    } catch (err) {
+
+        console.log(err);
+        showPopup("Login failed", "danger");
+
+    }
+}
+
+function showPopup(message, type) {
+
+    const popup = document.createElement("div");
+
+    popup.className =
+        `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
+
+    popup.style.zIndex = "9999";
+    popup.style.minWidth = "300px";
+
+    popup.innerText = message;
+
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+        popup.remove();
+    }, 2200);
+}
+</script>
+
+</body>
+</html>

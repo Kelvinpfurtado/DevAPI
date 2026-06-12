@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - DevAPI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+
+        <a class="navbar-brand" href="index.html">DevAPI</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                <li class="nav-item"><a class="nav-link active" href="register.html">Register</a></li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<!-- REGISTER FORM -->
+<div class="container d-flex justify-content-center align-items-center" style="height: 85vh;">
+
+    <div class="card p-4" style="width: 450px;">
+
+        <h3 class="text-center mb-4">Create Account</h3>
+
+        <form onsubmit="event.preventDefault(); registerUser();">
+
+            <div class="mb-3">
+                <label>Name</label>
+                <input id="name" type="text" class="form-control" placeholder="Enter your name">
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input id="email" type="email" class="form-control" placeholder="Enter your email">
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input id="password" type="password" class="form-control" placeholder="Create password">
+            </div>
+
+            <div class="mb-3">
+                <label>Confirm Password</label>
+                <input id="confirmPassword" type="password" class="form-control" placeholder="Confirm password">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+async function registerUser() {
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (!name || !email || !password) {
+        showPopup("Please fill all fields", "danger");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showPopup("Passwords do not match", "danger");
+        return;
+    }
+
+    try {
+
+        const res = await fetch("http://localhost:3000/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+
+if (data.error) {
+
+    showPopup(data.error, "danger");
+
+} else {
+
+    showPopup("Registration successful", "success");
+
+    // WAIT 3 SEC THEN REDIRECT
+    setTimeout(() => {
+
+        window.location.href = "login.html";
+
+    }, 3000);
+
+    return;
+}
+
+    } catch (err) {
+
+        console.log(err);
+        showPopup("Request failed", "danger");
+
+    }
+}
+
+function showPopup(message, type) {
+
+    const popup = document.createElement("div");
+
+    popup.className =
+        `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
+
+    popup.style.zIndex = "9999";
+    popup.style.minWidth = "300px";
+
+    popup.innerText = message;
+
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+        popup.remove();
+    }, 2200);
+}
+</script>
+
+</body>
+</html>
