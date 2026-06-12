@@ -1,0 +1,86 @@
+/* GLOBAL */
+body {
+    background: linear-gradient(to right, #eef2f3, #dfe9f3);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* FLEX LAYOUT (FOOTER FIX) */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+}
+
+/* NAVBAR */
+.navbar {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* TITLES */
+h2 {
+    font-weight: 600;
+    color: #1e3a5f;
+}
+
+/* CARDS */
+.card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    transition: all 0.25s ease;
+    overflow: visible !important;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+}
+
+/* BUTTONS */
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.btn-outline-primary:hover {
+    background: #007bff;
+    color: white;
+}
+
+/* 3 DOT MENU */
+.dropdown-menu {
+    z-index: 9999 !important;
+    min-width: 140px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* EMPTY STATE */
+.text-center p {
+    color: #555;
+    font-size: 1.1rem;
+}
+
+/* FOOTER */
+footer {
+    margin-top: auto;
+    font-size: 14px;
+}
+
+/* SMALL POLISH */
+pre {
+    background: #f4f6f8;
+    padding: 10px;
+    border-radius: 8px;
+}
