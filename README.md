@@ -51,8 +51,11 @@ This project was developed during my internship to gain hands-on experience in:
 
 ## Screenshots
 
-Screenshots will be added soon.
+Project screenshots can be found in the `screenshots` directory.
 
 ## Author
 
 Kelvin Furtado
+
+- LinkedIn: www.linkedin.com/in/kelvin-furtado-67bb5a247
+- GitHub: github.com/Kelvinpfurtado
