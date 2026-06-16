@@ -108,4 +108,4 @@ Frontend Pages:
 Kelvin Furtado
 
 - LinkedIn: www.linkedin.com/in/kelvin-furtado-67bb5a247
-- GitHub: github.com/Kelvinpfurtado
+- GitHub: www.github.com/Kelvinpfurtado
