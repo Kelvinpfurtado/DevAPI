@@ -51,7 +51,57 @@ This project was developed during my internship to gain hands-on experience in:
 
 ## Screenshots
 
-Project screenshots can be found in the `screenshots` directory.
+### Login Page
+![Login](screenshots/Login.png)
+
+### Registration Page
+![Registration](screenshots/Registartion.png)
+
+### Dashboard
+![Dashboard](screenshots/Dashboard.png)
+
+### API Request Builder
+![API Builder](screenshots/API-request builder.png)
+
+### API Response
+![API Response](screenshots/API-response.png)
+
+### Collections
+![Collections](screenshots/Collections.png)
+
+### Collection Details
+![Collection Details](screenshots/Collection-details.png)
+
+### Profile
+![Profile](screenshots/Profile.png)
+
+### Request History
+![History](screenshots/Request-history.png)
+
+## Repository Structure
+
+```text
+backend/
+├── models/
+│   ├── Collection.js
+│   ├── History.js
+│   ├── Team.js
+│   └── User.js
+
+css/
+└── style.css
+
+screenshots/
+
+Frontend Pages:
+- index.html
+- login.html
+- register.html
+- profile.html
+- collections.html
+- request-details.html
+- team.html
+```
 
 ## Author
 
