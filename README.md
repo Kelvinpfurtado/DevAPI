@@ -61,7 +61,7 @@ This project was developed during my internship to gain hands-on experience in:
 ![Dashboard](screenshots/Dashboard.png)
 
 ### API Request Builder
-![API Builder](screenshots/API-request builder.png)
+![API Builder](screenshots/API-requestbuilder.png)
 
 ### API Response
 ![API Response](screenshots/API-response.png)
